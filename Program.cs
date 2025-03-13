@@ -96,7 +96,7 @@ namespace LabCSharp3PrototypePattern
       return CalculateDeterminant(matrix.matrix, matrix.Size);
     }
 
-    private static int CalculateDeterminant(int[,] mat, int size)
+    public static int CalculateDeterminant(int[,] mat, int size)
     {
       if (size == 1)
         return mat[0, 0];
@@ -139,7 +139,7 @@ namespace LabCSharp3PrototypePattern
       return inverseMatrix;
     }
 
-    private static int[,] GetAdjugateMatrix(int[,] mat, int size)
+    public static int[,] GetAdjugateMatrix(int[,] mat, int size)
     {
       int[,] adjugateMatrix = new int[size, size];
 
@@ -156,7 +156,7 @@ namespace LabCSharp3PrototypePattern
       return adjugateMatrix;
     }
 
-    private static int[,] GetSubMatrix(int[,] mat, int size, int rowToRemove, int colToRemove)
+    public static int[,] GetSubMatrix(int[,] mat, int size, int rowToRemove, int colToRemove)
     {
       int[,] subMatrix = new int[size - 1, size - 1];
       int row = 0, col = 0;
@@ -177,6 +177,90 @@ namespace LabCSharp3PrototypePattern
 
       return subMatrix;
     }
+
+    public static bool operator >(SquareMatrix matrixOne, SquareMatrix matrixTwo)
+    {
+      if (matrixOne.Size != matrixTwo.Size)
+      {
+        throw new MatrixSizeException("Матрицы должны быть одного размера");
+      }
+
+      int sumOne = 0, sumTwo = 0;
+      for (int i = 0; i < matrixOne.Size; ++i)
+      {
+        for (int j = 0; j < matrixOne.Size; ++j)
+        {
+          sumOne += matrixOne.matrix[i, j];
+          sumTwo += matrixTwo.matrix[i, j];
+        }
+      }
+
+      return sumOne > sumTwo;
+    }
+
+    public static bool operator <(SquareMatrix matrixOne, SquareMatrix matrixTwo)
+    {
+      if (matrixOne.Size != matrixTwo.Size)
+      {
+        throw new MatrixSizeException("Матрицы должны быть одного размера");
+      }
+
+      int sumOne = 0, sumTwo = 0;
+      for (int i = 0; i < matrixOne.Size; ++i)
+      {
+        for (int j = 0; j < matrixOne.Size; ++j)
+        {
+          sumOne += matrixOne.matrix[i, j];
+          sumTwo += matrixTwo.matrix[i, j];
+        }
+      }
+
+      return sumOne < sumTwo;
+    }
+
+    public static bool operator >=(SquareMatrix matrixOne, SquareMatrix matrixTwo)
+    {
+      return matrixOne > matrixTwo || matrixOne == matrixTwo;
+    }
+
+    public static bool operator <=(SquareMatrix matrixOne, SquareMatrix matrixTwo)
+    {
+      return matrixOne < matrixTwo || matrixOne == matrixTwo;
+    }
+
+    public static bool operator ==(SquareMatrix matrixOne, SquareMatrix matrixTwo)
+    {
+      if (ReferenceEquals(matrixOne, matrixTwo))
+        return true;
+
+      if (matrixOne is null || matrixTwo is null)
+        return false;
+
+      if (matrixOne.Size != matrixTwo.Size)
+        return false;
+
+      for (int i = 0; i < matrixOne.Size; ++i)
+      {
+        for (int j = 0; j < matrixOne.Size; ++j)
+        {
+          if (matrixOne.matrix[i, j] != matrixTwo.matrix[i, j])
+            return false;
+        }
+      }
+
+      return true;
+    }
+
+    public static bool operator !=(SquareMatrix matrixOne, SquareMatrix matrixTwo)
+    {
+      return !(matrixOne == matrixTwo);
+    }
+
+    public static explicit operator int(SquareMatrix matrix)
+    {
+      return !matrix;
+    }
+
   }
 
   public class MatrixSizeException : Exception
