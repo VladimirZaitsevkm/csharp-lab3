@@ -261,6 +261,16 @@ namespace LabCSharp3PrototypePattern
       return !matrix;
     }
 
+    public static bool operator true(SquareMatrix matrix)
+    {
+      return !matrix != 0;
+    }
+
+    public static bool operator false(SquareMatrix matrix)
+    {
+      return !matrix == 0;
+    }
+
   }
 
   public class MatrixSizeException : Exception
