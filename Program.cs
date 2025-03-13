@@ -117,7 +117,7 @@ namespace LabCSharp3PrototypePattern
       return det;
     }
 
-    public static SquareMatrix operator ~(SquareMatrix matrix)
+    public static double[,] operator ~(SquareMatrix matrix)
     {
       int det = !matrix;
       if (det == 0)
@@ -136,16 +136,7 @@ namespace LabCSharp3PrototypePattern
         }
       }
 
-      SquareMatrix result = new SquareMatrix(matrix.Size);
-      for (int i = 0; i < matrix.Size; i++)
-      {
-        for (int j = 0; j < matrix.Size; j++)
-        {
-          result.matrix[i, j] = (int)inverseMatrix[i, j];
-        }
-      }
-
-      return result;
+      return inverseMatrix;
     }
 
     private static int[,] GetAdjugateMatrix(int[,] mat, int size)
