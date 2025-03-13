@@ -32,8 +32,29 @@ namespace LabCSharp3PrototypePattern
         }
       }
     }
-  }
+  
 
+  public static SquareMatrix operator +(SquareMatrix matrixOne, SquareMatrix matrixTwo)
+    {
+
+      if (matrixOne.Size != matrixTwo.Size)
+      {
+        throw new MatrixSizeException("Матрицы должны быть одного размера");
+      }
+
+      SquareMatrix result = new SquareMatrix(matrixOne.Size);
+
+      for (int i = 0; i < matrixOne.Size; i++)
+      {
+        for (int j = 0; j < matrixOne.Size; j++)
+        {
+          result.matrix[i, j] = matrixOne.matrix[i, j] + matrixTwo.matrix[i, j];
+        }
+      }
+
+      return result;
+    }
+  }
   public class MatrixSizeException : Exception
   {
     public MatrixSizeException(string message) : base(message) { }
