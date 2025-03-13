@@ -4,25 +4,25 @@ namespace LabCSharp3PrototypePattern
 {
   public class SquareMatrix : ICloneable, IComparable<SquareMatrix>
   {
-    public static Random rnd = new Random();
-    public int[,] matrix;
-    public int Size;
+    private static Random s_random = new Random();
+    private int[,] _matrix;
+    public int Size { get; private set; }
 
     public SquareMatrix(int size)
     {
       if (size <= 0) throw new MatrixSizeException("Размер матрицы был указан некорректно");
-      this.Size = size;
-      this.matrix = new int[size, size];
+      Size = size;
+      _matrix = new int[size, size];
       GenerateSquareMatrix();
     }
 
-    public void GenerateSquareMatrix()
+    private void GenerateSquareMatrix()
     {
-      for (int i = 0; i < Size; ++i)
+      for (int row = 0; row < Size; ++row)
       {
-        for (int j = 0; j < Size; ++j)
+        for (int column = 0; column < Size; ++column)
         {
-          matrix[i, j] = rnd.Next(1000);
+          _matrix[row, column] = s_random.Next(1000);
         }
       }
     }
@@ -36,11 +36,11 @@ namespace LabCSharp3PrototypePattern
 
       SquareMatrix result = new SquareMatrix(matrixOne.Size);
 
-      for (int i = 0; i < matrixOne.Size; ++i)
+      for (int row = 0; row < matrixOne.Size; ++row)
       {
-        for (int j = 0; j < matrixOne.Size; ++j)
+        for (int column = 0; column < matrixOne.Size; ++column)
         {
-          result.matrix[i, j] = matrixOne.matrix[i, j] + matrixTwo.matrix[i, j];
+          result._matrix[row, column] = matrixOne._matrix[row, column] + matrixTwo._matrix[row, column];
         }
       }
 
@@ -56,11 +56,11 @@ namespace LabCSharp3PrototypePattern
 
       SquareMatrix result = new SquareMatrix(matrixOne.Size);
 
-      for (int i = 0; i < matrixOne.Size; ++i)
+      for (int row = 0; row < matrixOne.Size; ++row)
       {
-        for (int j = 0; j < matrixOne.Size; ++j)
+        for (int column = 0; column < matrixOne.Size; ++column)
         {
-          result.matrix[i, j] = matrixOne.matrix[i, j] - matrixTwo.matrix[i, j];
+          result._matrix[row, column] = matrixOne._matrix[row, column] - matrixTwo._matrix[row, column];
         }
       }
 
@@ -76,14 +76,14 @@ namespace LabCSharp3PrototypePattern
 
       SquareMatrix result = new SquareMatrix(matrixOne.Size);
 
-      for (int i = 0; i < matrixOne.Size; ++i)
+      for (int row = 0; row < matrixOne.Size; ++row)
       {
-        for (int j = 0; j < matrixOne.Size; ++j)
+        for (int column = 0; column < matrixOne.Size; ++column)
         {
-          result.matrix[i, j] = 0;
+          result._matrix[row, column] = 0;
           for (int k = 0; k < matrixOne.Size; ++k)
           {
-            result.matrix[i, j] += matrixOne.matrix[i, k] * matrixTwo.matrix[k, j];
+            result._matrix[row, column] += matrixOne._matrix[row, k] * matrixTwo._matrix[k, column];
           }
         }
       }
@@ -93,25 +93,25 @@ namespace LabCSharp3PrototypePattern
 
     public static int operator !(SquareMatrix matrix)
     {
-      return CalculateDeterminant(matrix.matrix, matrix.Size);
+      return CalculateDeterminant(matrix._matrix, matrix.Size);
     }
 
     public static double[,] operator ~(SquareMatrix matrix)
     {
-      int det = !matrix;
-      if (det == 0)
+      int determinant = !matrix;
+      if (determinant == 0)
       {
         throw new MatrixDeterminantZeroException("Обратной матрицы не существует, так как определитель равен нулю.");
       }
 
       double[,] inverseMatrix = new double[matrix.Size, matrix.Size];
-      int[,] adjugateMatrix = GetAdjugateMatrix(matrix.matrix, matrix.Size);
+      int[,] adjugateMatrix = GetAdjugateMatrix(matrix._matrix, matrix.Size);
 
-      for (int i = 0; i < matrix.Size; i++)
+      for (int row = 0; row < matrix.Size; row++)
       {
-        for (int j = 0; j < matrix.Size; j++)
+        for (int column = 0; column < matrix.Size; column++)
         {
-          inverseMatrix[i, j] = (double)adjugateMatrix[i, j] / det;
+          inverseMatrix[row, column] = (double)adjugateMatrix[row, column] / determinant;
         }
       }
 
@@ -126,12 +126,12 @@ namespace LabCSharp3PrototypePattern
       }
 
       int sumOne = 0, sumTwo = 0;
-      for (int i = 0; i < matrixOne.Size; ++i)
+      for (int row = 0; row < matrixOne.Size; ++row)
       {
-        for (int j = 0; j < matrixOne.Size; ++j)
+        for (int column = 0; column < matrixOne.Size; ++column)
         {
-          sumOne += matrixOne.matrix[i, j];
-          sumTwo += matrixTwo.matrix[i, j];
+          sumOne += matrixOne._matrix[row, column];
+          sumTwo += matrixTwo._matrix[row, column];
         }
       }
 
@@ -146,12 +146,12 @@ namespace LabCSharp3PrototypePattern
       }
 
       int sumOne = 0, sumTwo = 0;
-      for (int i = 0; i < matrixOne.Size; ++i)
+      for (int row = 0; row < matrixOne.Size; ++row)
       {
-        for (int j = 0; j < matrixOne.Size; ++j)
+        for (int column = 0; column < matrixOne.Size; ++column)
         {
-          sumOne += matrixOne.matrix[i, j];
-          sumTwo += matrixTwo.matrix[i, j];
+          sumOne += matrixOne._matrix[row, column];
+          sumTwo += matrixTwo._matrix[row, column];
         }
       }
 
@@ -179,11 +179,11 @@ namespace LabCSharp3PrototypePattern
       if (matrixOne.Size != matrixTwo.Size)
         return false;
 
-      for (int i = 0; i < matrixOne.Size; ++i)
+      for (int row = 0; row < matrixOne.Size; ++row)
       {
-        for (int j = 0; j < matrixOne.Size; ++j)
+        for (int column = 0; column < matrixOne.Size; ++column)
         {
-          if (matrixOne.matrix[i, j] != matrixTwo.matrix[i, j])
+          if (matrixOne._matrix[row, column] != matrixTwo._matrix[row, column])
             return false;
         }
       }
@@ -219,11 +219,11 @@ namespace LabCSharp3PrototypePattern
     public override string ToString()
     {
       string result = "";
-      for (int i = 0; i < Size; ++i)
+      for (int row = 0; row < Size; ++row)
       {
-        for (int j = 0; j < Size; ++j)
+        for (int column = 0; column < Size; ++column)
         {
-          result += matrix[i, j] + "\t";
+          result += _matrix[row, column] + "\t";
         }
         result += "\n";
       }
@@ -235,12 +235,12 @@ namespace LabCSharp3PrototypePattern
       if (other == null) return 1;
 
       int thisSum = 0, otherSum = 0;
-      for (int i = 0; i < Size; ++i)
+      for (int row = 0; row < Size; ++row)
       {
-        for (int j = 0; j < Size; ++j)
+        for (int column = 0; column < Size; ++column)
         {
-          thisSum += matrix[i, j];
-          otherSum += other.matrix[i, j];
+          thisSum += _matrix[row, column];
+          otherSum += other._matrix[row, column];
         }
       }
 
@@ -259,11 +259,11 @@ namespace LabCSharp3PrototypePattern
     public override int GetHashCode()
     {
       int hash = 17;
-      for (int i = 0; i < Size; ++i)
+      for (int row = 0; row < Size; ++row)
       {
-        for (int j = 0; j < Size; ++j)
+        for (int column = 0; column < Size; ++column)
         {
-          hash = hash * 23 + matrix[i, j].GetHashCode();
+          hash = hash * 23 + _matrix[row, column].GetHashCode();
         }
       }
       return hash;
@@ -272,69 +272,69 @@ namespace LabCSharp3PrototypePattern
     public object Clone()
     {
       SquareMatrix clone = new SquareMatrix(Size);
-      for (int i = 0; i < Size; ++i)
+      for (int row = 0; row < Size; ++row)
       {
-        for (int j = 0; j < Size; ++j)
+        for (int column = 0; column < Size; ++column)
         {
-          clone.matrix[i, j] = matrix[i, j];
+          clone._matrix[row, column] = _matrix[row, column];
         }
       }
       return clone;
     }
 
-    private static int CalculateDeterminant(int[,] mat, int size)
+    private static int CalculateDeterminant(int[,] matrix, int size)
     {
       if (size == 1)
-        return mat[0, 0];
+        return matrix[0, 0];
 
       if (size == 2)
-        return mat[0, 0] * mat[1, 1] - mat[0, 1] * mat[1, 0];
+        return matrix[0, 0] * matrix[1, 1] - matrix[0, 1] * matrix[1, 0];
 
-      int det = 0;
+      int determinant = 0;
       int sign = 1;
 
-      for (int i = 0; i < size; i++)
+      for (int column = 0; column < size; column++)
       {
-        int[,] subMatrix = GetSubMatrix(mat, size, 0, i);
-        det += sign * mat[0, i] * CalculateDeterminant(subMatrix, size - 1);
+        int[,] subMatrix = GetSubMatrix(matrix, size, 0, column);
+        determinant += sign * matrix[0, column] * CalculateDeterminant(subMatrix, size - 1);
         sign = -sign;
       }
 
-      return det;
+      return determinant;
     }
 
-    private static int[,] GetAdjugateMatrix(int[,] mat, int size)
+    private static int[,] GetAdjugateMatrix(int[,] matrix, int size)
     {
       int[,] adjugateMatrix = new int[size, size];
 
-      for (int i = 0; i < size; i++)
+      for (int row = 0; row < size; row++)
       {
-        for (int j = 0; j < size; j++)
+        for (int column = 0; column < size; column++)
         {
-          int[,] subMatrix = GetSubMatrix(mat, size, i, j);
-          int sign = ((i + j) % 2 == 0) ? 1 : -1;
-          adjugateMatrix[j, i] = sign * CalculateDeterminant(subMatrix, size - 1);
+          int[,] subMatrix = GetSubMatrix(matrix, size, row, column);
+          int sign = ((row + column) % 2 == 0) ? 1 : -1;
+          adjugateMatrix[column, row] = sign * CalculateDeterminant(subMatrix, size - 1);
         }
       }
 
       return adjugateMatrix;
     }
 
-    private static int[,] GetSubMatrix(int[,] mat, int size, int rowToRemove, int colToRemove)
+    private static int[,] GetSubMatrix(int[,] matrix, int size, int rowToRemove, int columnToRemove)
     {
       int[,] subMatrix = new int[size - 1, size - 1];
-      int row = 0, col = 0;
+      int row = 0, column = 0;
 
       for (int i = 0; i < size; i++)
       {
         if (i == rowToRemove) continue;
 
-        col = 0;
+        column = 0;
         for (int j = 0; j < size; j++)
         {
-          if (j == colToRemove) continue;
-          subMatrix[row, col] = mat[i, j];
-          col++;
+          if (j == columnToRemove) continue;
+          subMatrix[row, column] = matrix[i, j];
+          column++;
         }
         row++;
       }
@@ -359,52 +359,139 @@ namespace LabCSharp3PrototypePattern
     {
       try
       {
-        SquareMatrix matrix1 = new SquareMatrix(3);
-        SquareMatrix matrix2 = new SquareMatrix(3);
+        Console.WriteLine("Введите размер матриц:");
+        int size = int.Parse(Console.ReadLine());
 
-        Console.WriteLine("Matrix 1:");
+        SquareMatrix matrix1 = new SquareMatrix(size);
+        SquareMatrix matrix2 = new SquareMatrix(size);
+
+        Console.WriteLine("Матрица 1:");
         Console.WriteLine(matrix1);
 
-        Console.WriteLine("Matrix 2:");
+        Console.WriteLine("Матрица 2:");
         Console.WriteLine(matrix2);
 
-        SquareMatrix sum = matrix1 + matrix2;
-        Console.WriteLine("Sum:");
-        Console.WriteLine(sum);
-
-        SquareMatrix product = matrix1 * matrix2;
-        Console.WriteLine("Product:");
-        Console.WriteLine(product);
-
-        int determinant = !matrix1;
-        Console.WriteLine("Determinant of Matrix 1: " + determinant);
-
-        double[,] inverse = ~matrix1;
-        Console.WriteLine("Inverse of Matrix 1:");
-        for (int i = 0; i < inverse.GetLength(0); i++)
+        while (true)
         {
-          for (int j = 0; j < inverse.GetLength(1); j++)
-          {
-            Console.Write(inverse[i, j] + "\t");
-          }
-          Console.WriteLine();
-        }
+          Console.WriteLine("\nВыберите операцию:");
+          Console.WriteLine("1. Сложение матриц");
+          Console.WriteLine("2. Вычитание матриц");
+          Console.WriteLine("3. Умножение матриц");
+          Console.WriteLine("4. Нахождение определителя матрицы 1");
+          Console.WriteLine("5. Нахождение обратной матрицы для матрицы 1");
+          Console.WriteLine("6. Клонирование матрицы 1");
+          Console.WriteLine("7. Сравнение матриц");
+          Console.WriteLine("8. Выход");
 
-        SquareMatrix clone = (SquareMatrix)matrix1.Clone();
-        Console.WriteLine("Clone of Matrix 1:");
-        Console.WriteLine(clone);
+          int choice = int.Parse(Console.ReadLine());
+
+          switch (choice)
+          {
+            case 1:
+              SquareMatrix sum = matrix1 + matrix2;
+              Console.WriteLine("Результат сложения:");
+              Console.WriteLine(sum);
+              break;
+
+            case 2:
+              SquareMatrix difference = matrix1 - matrix2;
+              Console.WriteLine("Результат вычитания:");
+              Console.WriteLine(difference);
+              break;
+
+            case 3:
+              SquareMatrix product = matrix1 * matrix2;
+              Console.WriteLine("Результат умножения:");
+              Console.WriteLine(product);
+              break;
+
+            case 4:
+              int determinant = !matrix1;
+              Console.WriteLine("Определитель матрицы 1: " + determinant);
+              break;
+
+            case 5:
+              double[,] inverse = ~matrix1;
+              Console.WriteLine("Обратная матрица для матрицы 1:");
+              for (int row = 0; row < inverse.GetLength(0); row++)
+              {
+                for (int column = 0; column < inverse.GetLength(1); column++)
+                {
+                  Console.Write(inverse[row, column] + "\t");
+                }
+                Console.WriteLine();
+              }
+              break;
+
+            case 6:
+              SquareMatrix clone = (SquareMatrix)matrix1.Clone();
+              Console.WriteLine("Клон матрицы 1:");
+              Console.WriteLine(clone);
+              break;
+
+            case 7:
+              Console.WriteLine("\nВыберите операцию сравнения:");
+              Console.WriteLine("1. Матрица 1 > Матрица 2");
+              Console.WriteLine("2. Матрица 1 < Матрица 2");
+              Console.WriteLine("3. Матрица 1 >= Матрица 2");
+              Console.WriteLine("4. Матрица 1 <= Матрица 2");
+              Console.WriteLine("5. Матрица 1 == Матрица 2");
+              Console.WriteLine("6. Матрица 1 != Матрица 2");
+
+              int compareChoice = int.Parse(Console.ReadLine());
+
+              switch (compareChoice)
+              {
+                case 1:
+                  Console.WriteLine("Матрица 1 > Матрица 2: " + (matrix1 > matrix2));
+                  break;
+
+                case 2:
+                  Console.WriteLine("Матрица 1 < Матрица 2: " + (matrix1 < matrix2));
+                  break;
+
+                case 3:
+                  Console.WriteLine("Матрица 1 >= Матрица 2: " + (matrix1 >= matrix2));
+                  break;
+
+                case 4:
+                  Console.WriteLine("Матрица 1 <= Матрица 2: " + (matrix1 <= matrix2));
+                  break;
+
+                case 5:
+                  Console.WriteLine("Матрица 1 == Матрица 2: " + (matrix1 == matrix2));
+                  break;
+
+                case 6:
+                  Console.WriteLine("Матрица 1 != Матрица 2: " + (matrix1 != matrix2));
+                  break;
+
+                default:
+                  Console.WriteLine("Неверный выбор. Попробуйте снова.");
+                  break;
+              }
+              break;
+
+            case 8:
+              return;
+
+            default:
+              Console.WriteLine("Неверный выбор. Попробуйте снова.");
+              break;
+          }
+        }
       }
       catch (MatrixSizeException ex)
       {
-        Console.WriteLine("Matrix Size Exception: " + ex.Message);
+        Console.WriteLine("Ошибка размера матрицы: " + ex.Message);
       }
       catch (MatrixDeterminantZeroException ex)
       {
-        Console.WriteLine("Matrix Determinant Zero Exception: " + ex.Message);
+        Console.WriteLine("Ошибка определителя: " + ex.Message);
       }
       catch (Exception ex)
       {
-        Console.WriteLine("An error occurred: " + ex.Message);
+        Console.WriteLine("Произошла ошибка: " + ex.Message);
       }
     }
   }
