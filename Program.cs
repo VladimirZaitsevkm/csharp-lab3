@@ -101,9 +101,9 @@ namespace LabCSharp3PrototypePattern
       return result;
     }
 
-    public static SquareMatrix operator !(SquareMatrix matrix)
+    public static int operator !(SquareMatrix matrix)
     {
-      return matrix.CalculateDeterminant();
+      return matrix.CalculateDeterminant(matrix.matrix, matrix.Size);
     }
 
     private int CalculateDeterminant(int[,] mat, int size)
@@ -139,7 +139,7 @@ namespace LabCSharp3PrototypePattern
     }
   }
 
-    public class MatrixSizeException : Exception
+  public class MatrixSizeException : Exception
   {
     public MatrixSizeException(string message) : base(message) { }
   }
