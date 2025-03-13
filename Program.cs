@@ -19,6 +19,18 @@ namespace LabCSharp3PrototypePattern
       if (size <= 0) throw new MatrixSizeException("Размер матрицы был указан некорректно");
       this.Size = size;
       this.matrix = new int[size, size];
+      generateSquareMatrix();
+    }
+
+    public void generateSquareMatrix()
+    {
+      for (int i = 0; i < Size; i++)
+      {
+        for (int j = 0; j < Size; j++)
+        {
+          matrix[i, j] = rnd.Next(1000);
+        }
+      }
     }
   }
 
