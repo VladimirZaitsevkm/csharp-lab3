@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace LabCSharp3PrototypePattern
 {
+
+  public class SquareMatrix
+  {
+    public int[,] matrix;
+    public int Size;
+  }
   internal class Program
   {
-
-    public class SquareMatrix
-    {
-      public int[,] matrix;
-      public int Size;
-    }
     static void Main(string[] args)
     {
     }
