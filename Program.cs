@@ -2,7 +2,7 @@
 
 namespace LabCSharp3PrototypePattern
 {
-  public class SquareMatrix
+  public class SquareMatrix : ICloneable, IComparable<SquareMatrix>
   {
     public static Random rnd = new Random();
     public int[,] matrix;
@@ -96,33 +96,12 @@ namespace LabCSharp3PrototypePattern
       return CalculateDeterminant(matrix.matrix, matrix.Size);
     }
 
-    public static int CalculateDeterminant(int[,] mat, int size)
-    {
-      if (size == 1)
-        return mat[0, 0];
-
-      if (size == 2)
-        return mat[0, 0] * mat[1, 1] - mat[0, 1] * mat[1, 0];
-
-      int det = 0;
-      int sign = 1;
-
-      for (int i = 0; i < size; i++)
-      {
-        int[,] subMatrix = GetSubMatrix(mat, size, 0, i);
-        det += sign * mat[0, i] * CalculateDeterminant(subMatrix, size - 1);
-        sign = -sign;
-      }
-
-      return det;
-    }
-
     public static double[,] operator ~(SquareMatrix matrix)
     {
       int det = !matrix;
       if (det == 0)
       {
-        throw new InvalidOperationException("Обратной матрицы не существует, так как определитель равен нулю.");
+        throw new MatrixDeterminantZeroException("Обратной матрицы не существует, так как определитель равен нулю.");
       }
 
       double[,] inverseMatrix = new double[matrix.Size, matrix.Size];
@@ -137,45 +116,6 @@ namespace LabCSharp3PrototypePattern
       }
 
       return inverseMatrix;
-    }
-
-    public static int[,] GetAdjugateMatrix(int[,] mat, int size)
-    {
-      int[,] adjugateMatrix = new int[size, size];
-
-      for (int i = 0; i < size; i++)
-      {
-        for (int j = 0; j < size; j++)
-        {
-          int[,] subMatrix = GetSubMatrix(mat, size, i, j);
-          int sign = ((i + j) % 2 == 0) ? 1 : -1;
-          adjugateMatrix[j, i] = sign * CalculateDeterminant(subMatrix, size - 1);
-        }
-      }
-
-      return adjugateMatrix;
-    }
-
-    public static int[,] GetSubMatrix(int[,] mat, int size, int rowToRemove, int colToRemove)
-    {
-      int[,] subMatrix = new int[size - 1, size - 1];
-      int row = 0, col = 0;
-
-      for (int i = 0; i < size; i++)
-      {
-        if (i == rowToRemove) continue;
-
-        col = 0;
-        for (int j = 0; j < size; j++)
-        {
-          if (j == colToRemove) continue;
-          subMatrix[row, col] = mat[i, j];
-          col++;
-        }
-        row++;
-      }
-
-      return subMatrix;
     }
 
     public static bool operator >(SquareMatrix matrixOne, SquareMatrix matrixTwo)
@@ -261,6 +201,11 @@ namespace LabCSharp3PrototypePattern
       return !matrix;
     }
 
+    public static explicit operator double[,](SquareMatrix matrix)
+    {
+      return ~matrix;
+    }
+
     public static bool operator true(SquareMatrix matrix)
     {
       return !matrix != 0;
@@ -271,6 +216,131 @@ namespace LabCSharp3PrototypePattern
       return !matrix == 0;
     }
 
+    public override string ToString()
+    {
+      string result = "";
+      for (int i = 0; i < Size; ++i)
+      {
+        for (int j = 0; j < Size; ++j)
+        {
+          result += matrix[i, j] + "\t";
+        }
+        result += "\n";
+      }
+      return result;
+    }
+
+    public int CompareTo(SquareMatrix other)
+    {
+      if (other == null) return 1;
+
+      int thisSum = 0, otherSum = 0;
+      for (int i = 0; i < Size; ++i)
+      {
+        for (int j = 0; j < Size; ++j)
+        {
+          thisSum += matrix[i, j];
+          otherSum += other.matrix[i, j];
+        }
+      }
+
+      return thisSum.CompareTo(otherSum);
+    }
+
+    public override bool Equals(object obj)
+    {
+      if (obj == null || GetType() != obj.GetType())
+        return false;
+
+      SquareMatrix other = (SquareMatrix)obj;
+      return this == other;
+    }
+
+    public override int GetHashCode()
+    {
+      int hash = 17;
+      for (int i = 0; i < Size; ++i)
+      {
+        for (int j = 0; j < Size; ++j)
+        {
+          hash = hash * 23 + matrix[i, j].GetHashCode();
+        }
+      }
+      return hash;
+    }
+
+    public object Clone()
+    {
+      SquareMatrix clone = new SquareMatrix(Size);
+      for (int i = 0; i < Size; ++i)
+      {
+        for (int j = 0; j < Size; ++j)
+        {
+          clone.matrix[i, j] = matrix[i, j];
+        }
+      }
+      return clone;
+    }
+
+    private static int CalculateDeterminant(int[,] mat, int size)
+    {
+      if (size == 1)
+        return mat[0, 0];
+
+      if (size == 2)
+        return mat[0, 0] * mat[1, 1] - mat[0, 1] * mat[1, 0];
+
+      int det = 0;
+      int sign = 1;
+
+      for (int i = 0; i < size; i++)
+      {
+        int[,] subMatrix = GetSubMatrix(mat, size, 0, i);
+        det += sign * mat[0, i] * CalculateDeterminant(subMatrix, size - 1);
+        sign = -sign;
+      }
+
+      return det;
+    }
+
+    private static int[,] GetAdjugateMatrix(int[,] mat, int size)
+    {
+      int[,] adjugateMatrix = new int[size, size];
+
+      for (int i = 0; i < size; i++)
+      {
+        for (int j = 0; j < size; j++)
+        {
+          int[,] subMatrix = GetSubMatrix(mat, size, i, j);
+          int sign = ((i + j) % 2 == 0) ? 1 : -1;
+          adjugateMatrix[j, i] = sign * CalculateDeterminant(subMatrix, size - 1);
+        }
+      }
+
+      return adjugateMatrix;
+    }
+
+    private static int[,] GetSubMatrix(int[,] mat, int size, int rowToRemove, int colToRemove)
+    {
+      int[,] subMatrix = new int[size - 1, size - 1];
+      int row = 0, col = 0;
+
+      for (int i = 0; i < size; i++)
+      {
+        if (i == rowToRemove) continue;
+
+        col = 0;
+        for (int j = 0; j < size; j++)
+        {
+          if (j == colToRemove) continue;
+          subMatrix[row, col] = mat[i, j];
+          col++;
+        }
+        row++;
+      }
+
+      return subMatrix;
+    }
   }
 
   public class MatrixSizeException : Exception
@@ -278,10 +348,64 @@ namespace LabCSharp3PrototypePattern
     public MatrixSizeException(string message) : base(message) { }
   }
 
+  public class MatrixDeterminantZeroException : Exception
+  {
+    public MatrixDeterminantZeroException(string message) : base(message) { }
+  }
+
   internal class Program
   {
     static void Main(string[] args)
     {
+      try
+      {
+        SquareMatrix matrix1 = new SquareMatrix(3);
+        SquareMatrix matrix2 = new SquareMatrix(3);
+
+        Console.WriteLine("Matrix 1:");
+        Console.WriteLine(matrix1);
+
+        Console.WriteLine("Matrix 2:");
+        Console.WriteLine(matrix2);
+
+        SquareMatrix sum = matrix1 + matrix2;
+        Console.WriteLine("Sum:");
+        Console.WriteLine(sum);
+
+        SquareMatrix product = matrix1 * matrix2;
+        Console.WriteLine("Product:");
+        Console.WriteLine(product);
+
+        int determinant = !matrix1;
+        Console.WriteLine("Determinant of Matrix 1: " + determinant);
+
+        double[,] inverse = ~matrix1;
+        Console.WriteLine("Inverse of Matrix 1:");
+        for (int i = 0; i < inverse.GetLength(0); i++)
+        {
+          for (int j = 0; j < inverse.GetLength(1); j++)
+          {
+            Console.Write(inverse[i, j] + "\t");
+          }
+          Console.WriteLine();
+        }
+
+        SquareMatrix clone = (SquareMatrix)matrix1.Clone();
+        Console.WriteLine("Clone of Matrix 1:");
+        Console.WriteLine(clone);
+      }
+      catch (MatrixSizeException ex)
+      {
+        Console.WriteLine("Matrix Size Exception: " + ex.Message);
+      }
+      catch (MatrixDeterminantZeroException ex)
+      {
+        Console.WriteLine("Matrix Determinant Zero Exception: " + ex.Message);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine("An error occurred: " + ex.Message);
+      }
     }
   }
 }
