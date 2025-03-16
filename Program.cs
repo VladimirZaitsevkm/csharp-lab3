@@ -81,9 +81,9 @@ namespace LabCSharp3PrototypePattern
         for (int column = 0; column < matrixOne.Size; ++column)
         {
           result._matrix[row, column] = 0;
-          for (int k = 0; k < matrixOne.Size; ++k)
+          for (int index = 0; index < matrixOne.Size; ++index)
           {
-            result._matrix[row, column] += matrixOne._matrix[row, k] * matrixTwo._matrix[k, column];
+            result._matrix[row, column] += matrixOne._matrix[row, index] * matrixTwo._matrix[index, column];
           }
         }
       }
@@ -158,17 +158,17 @@ namespace LabCSharp3PrototypePattern
       return sumOne < sumTwo;
     }
 
-    public static bool operator >=(SquareMatrix matrixOne, SquareMatrix matrixTwo)
+    public static bool operator >= (SquareMatrix matrixOne, SquareMatrix matrixTwo)
     {
       return matrixOne > matrixTwo || matrixOne == matrixTwo;
     }
 
-    public static bool operator <=(SquareMatrix matrixOne, SquareMatrix matrixTwo)
+    public static bool operator <= (SquareMatrix matrixOne, SquareMatrix matrixTwo)
     {
       return matrixOne < matrixTwo || matrixOne == matrixTwo;
     }
 
-    public static bool operator ==(SquareMatrix matrixOne, SquareMatrix matrixTwo)
+    public static bool operator == (SquareMatrix matrixOne, SquareMatrix matrixTwo)
     {
       if (ReferenceEquals(matrixOne, matrixTwo))
         return true;
