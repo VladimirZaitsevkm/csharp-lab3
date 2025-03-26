@@ -130,14 +130,6 @@ namespace LabCSharp3PrototypePattern
           }
         }
       }
-      catch (MatrixSizeException ex)
-      {
-        Console.WriteLine("Ошибка размера матрицы: " + ex.Message);
-      }
-      catch (MatrixDeterminantZeroException ex)
-      {
-        Console.WriteLine("Ошибка определителя: " + ex.Message);
-      }
       catch (Exception ex)
       {
         Console.WriteLine("Произошла ошибка: " + ex.Message);
